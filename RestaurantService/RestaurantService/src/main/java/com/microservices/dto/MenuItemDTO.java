@@ -1,8 +1,7 @@
 package com.microservices.dto;
 
 import com.microservices.entity.Restaurant;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+
 
 public class MenuItemDTO {
 
