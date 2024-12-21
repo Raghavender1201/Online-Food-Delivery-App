@@ -1,6 +1,5 @@
 package com.microservices.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CustomerDTO {
     private int id;

@@ -1,6 +1,5 @@
 package com.microservices.dto;
 
-import com.microservices.entity.MenuItem;
 
 import java.util.List;
 
