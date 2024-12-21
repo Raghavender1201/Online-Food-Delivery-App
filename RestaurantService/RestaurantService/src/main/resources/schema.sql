@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS restaurant (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL
+);
+
+
+CREATE TABLE IF NOT EXISTS menu_item (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    restaurant_id BIGINT NOT NULL,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurant(id) ON DELETE CASCADE
+);
