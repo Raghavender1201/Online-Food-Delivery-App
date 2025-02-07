@@ -65,36 +65,52 @@ public class RestaurantService implements IRestaurantService {
 
     @Override
     public MenuItemDTO createMenuItem(Long restaurantId, MenuItemDTO menuItemDTO) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RuntimeException("Restaurant with ID " + restaurantId + " not found."));
+        boolean itemExists = restaurant.getMenuItems().stream()
+                .anyMatch(item -> item.getName().equalsIgnoreCase(menuItemDTO.getName()));
+
+        if (itemExists) {
+            throw new RuntimeException("Menu item with name '" + menuItemDTO.getName() + "' already exists for this restaurant.");
+        }
         MenuItem menuItem = MenuItemMapper.mapToMenuItem(menuItemDTO);
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElse(null);
         menuItem.setRestaurant(restaurant);
         MenuItem savedMenuItem = menuRepository.save(menuItem);
-        MenuItemDTO savedMenuItemDTO = MenuItemMapper.mapToMenuItemDTO(savedMenuItem);
-        return savedMenuItemDTO;
+
+        return MenuItemMapper.mapToMenuItemDTO(savedMenuItem);
     }
 
     @Override
     public MenuItemDTO updateMenuItem(MenuItemDTO menuItemDTO) {
-        MenuItem menuItem = menuRepository.findById(menuItemDTO.getId()).orElse(null);
-        if (menuItem != null) {
-            menuItem.setName(menuItemDTO.getName());
-            menuItem.setPrice(menuItemDTO.getPrice());
-            return MenuItemMapper.mapToMenuItemDTO(menuRepository.save(menuItem));
-        }
-        return null;
+        MenuItem menuItem = menuRepository.findById(menuItemDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Menu item with ID " + menuItemDTO.getId() + " not found."));
+
+        menuItem.setName(menuItemDTO.getName());
+        menuItem.setPrice(menuItemDTO.getPrice());
+
+        return MenuItemMapper.mapToMenuItemDTO(menuRepository.save(menuItem));
     }
 
     @Override
     public void deleteMenuItem(Long id) {
+        if (!menuRepository.existsById(id)) {
+            throw new RuntimeException("Menu item with ID " + id + " not found.");
+        }
         menuRepository.deleteById(id);
     }
 
     @Override
     public List<MenuItemDTO> getAllMenuItems(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElse(null);
-        if (restaurant != null) {
-            return restaurant.getMenuItems().stream().map(MenuItemMapper::mapToMenuItemDTO).collect(Collectors.toList());
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RuntimeException("Restaurant with ID " + restaurantId + " not found."));
+
+        List<MenuItemDTO> menuItems = restaurant.getMenuItems().stream()
+                .map(MenuItemMapper::mapToMenuItemDTO)
+                .collect(Collectors.toList());
+
+        if (menuItems.isEmpty()) {
+            throw new RuntimeException("No menu items present for restaurant ID " + restaurantId);
         }
-        return List.of();
+        return menuItems;
     }
 }

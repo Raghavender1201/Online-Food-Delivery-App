@@ -7,6 +7,7 @@ import com.microservices.repository.CustomerRepository;
 import com.microservices.service.ICustomerService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,6 +23,8 @@ public class CustomerService implements ICustomerService {
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
 
         Customer customer = CustomerMapper.mapToCustomer(customerDTO);
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setCreatedBy("Admin");
         Customer savedCustomer = customerRepository.save(customer);
         CustomerDTO savedCustomerDTO = CustomerMapper.mapToCustomerDTO(savedCustomer);
         return savedCustomerDTO;
