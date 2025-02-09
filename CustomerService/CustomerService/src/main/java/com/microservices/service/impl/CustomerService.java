@@ -2,6 +2,8 @@ package com.microservices.service.impl;
 
 import com.microservices.dto.CustomerDTO;
 import com.microservices.entity.Customer;
+import com.microservices.exceptions.CustomerAlreadyExistException;
+import com.microservices.exceptions.CustomerNotFoundException;
 import com.microservices.mapper.CustomerMapper;
 import com.microservices.repository.CustomerRepository;
 import com.microservices.service.ICustomerService;
@@ -22,9 +24,13 @@ public class CustomerService implements ICustomerService {
     @Override
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
 
+        if(customerRepository.findByEmail(customerDTO.getEmail()).isPresent()){
+            throw new CustomerAlreadyExistException("Customer Already exist with email " + customerDTO.getEmail());
+        }
+
         Customer customer = CustomerMapper.mapToCustomer(customerDTO);
-        customer.setCreatedAt(LocalDateTime.now());
-        customer.setCreatedBy("Admin");
+//        customer.setCreatedAt(LocalDateTime.now());
+//        customer.setCreatedBy("Admin");
         Customer savedCustomer = customerRepository.save(customer);
         CustomerDTO savedCustomerDTO = CustomerMapper.mapToCustomerDTO(savedCustomer);
         return savedCustomerDTO;
@@ -38,7 +44,8 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public CustomerDTO updateCustomer(CustomerDTO customerDTO) {
-        Customer customer = customerRepository.findById(customerDTO.getId()).orElse(null);
+        Customer customer = customerRepository.findById(customerDTO.getId()).orElseThrow(() ->
+                new CustomerNotFoundException("Customer not found with id " + customerDTO.getId()));
         if (customer != null) {
             customer.setName(customerDTO.getName());
             customer.setEmail(customerDTO.getEmail());
@@ -51,6 +58,8 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void deleteCustomer(int id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() ->
+                new CustomerNotFoundException("Customer not found with id " + id));
         customerRepository.deleteById(id);
     }
 

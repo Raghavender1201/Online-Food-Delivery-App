@@ -1,12 +1,23 @@
 package com.microservices.dto;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
 
 public class RestaurantDTO {
     private Long id;
+    @NotEmpty(message = "name should not be empty")
+    @Size(min = 5, max=30, message = "Name should be between 5 and 30 characters")
+    @Schema(description = "Name of the restaurant", example = "McDonalds")
     private String name;
+    @Schema(description = "Address of the restaurant", example = "123 Main St")
+    @NotEmpty(message = "address should not be empty")
+    @Size(min = 5, max=30, message = "Address should be between 5 and 30 characters")
     private String address;
+    @Schema(description = "Menu items of the restaurant", example = "[{\"id\":1,\"name\":\"Burger\",\"price\":100,\"restaurantDTO\":null}]")
     private List<MenuItemDTO> menuItems;
 
     public RestaurantDTO(Long id, List<MenuItemDTO> menuItems, String address, String name) {

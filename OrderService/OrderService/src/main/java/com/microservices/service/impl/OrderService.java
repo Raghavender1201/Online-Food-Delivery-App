@@ -1,8 +1,12 @@
 package com.microservices.service.impl;
 
+import com.microservices.dto.MenuItemQuantityDTO;
 import com.microservices.dto.OrderDTO;
 import com.microservices.entity.MenuItemQuantity;
 import com.microservices.entity.Order;
+import com.microservices.exception.MenuItemNotFoundException;
+import com.microservices.exception.OrderNotFoundException;
+import com.microservices.exception.RestaurantNotFoundException;
 import com.microservices.mapper.OrderMapper;
 import com.microservices.pojo.MenuItem;
 import com.microservices.pojo.Restaurant;
@@ -11,6 +15,7 @@ import com.microservices.service.IOrderService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,17 +38,17 @@ public class OrderService implements IOrderService {
         Restaurant restaurant = restTemplate.getForObject("http://localhost:8081/restaurants/" + orderDTO.getRestaurantId(), Restaurant.class);
 
         if (restaurant == null) {
-            throw new IllegalArgumentException("Invalid restaurant ID");
+            throw new RestaurantNotFoundException("Restaurant not found with ID: " + orderDTO.getRestaurantId());
         }
 
         List<MenuItemQuantity> menuItems = new ArrayList<>();
-        for (MenuItemQuantity item : orderDTO.getMenuItemQuantity()) {
+        for (MenuItemQuantityDTO item : orderDTO.getMenuItemQuantityDTO()) {
             Long menuItemId = item.getMenuItemId();
             Integer quantity = item.getQuantity();
             MenuItem menuItem = restaurant.getMenuItems().stream()
                     .filter(m -> m.getId().equals(menuItemId))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID"));
+                    .orElseThrow(() -> new MenuItemNotFoundException("Menu item not found with ID: " + menuItemId));
 
             menuItems.add(new MenuItemQuantity(menuItemId, quantity));
             totalAmount += menuItem.getPrice() * quantity;
@@ -54,6 +59,8 @@ public class OrderService implements IOrderService {
         orderDTO.setOrderDate(new Date());
 
         Order order = OrderMapper.mapToOrder(orderDTO);
+        order.setCreatedAt(LocalDateTime.now());
+        order.setCreatedBy("Admin");
         Order savedOrder = orderRepository.save(order);
 
         return OrderMapper.mapToOrderDTO(savedOrder);
@@ -63,12 +70,12 @@ public class OrderService implements IOrderService {
     public OrderDTO getOrderById(Long id) {
         return orderRepository.findById(id)
                 .map(OrderMapper::mapToOrderDTO)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + id));
     }
 
     @Override
     public OrderDTO updateOrderStatus(Long id, String status) {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + id));
         order.setStatus(status);
         return OrderMapper.mapToOrderDTO(orderRepository.save(order));
     }
@@ -76,7 +83,7 @@ public class OrderService implements IOrderService {
     @Override
     public void deleteOrder(Long id) {
         if (!orderRepository.existsById(id)) {
-            throw new IllegalArgumentException("Order not found");
+            throw new OrderNotFoundException("Order not found with ID: " + id);
         }
         orderRepository.deleteById(id);
     }

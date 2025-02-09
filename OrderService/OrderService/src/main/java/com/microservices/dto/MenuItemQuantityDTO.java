@@ -1,29 +1,27 @@
-package com.microservices.entity;
+package com.microservices.dto;
 
-import jakarta.persistence.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@Entity
-public class MenuItemQuantity extends BaseEntity {
+public class MenuItemQuantityDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Schema(
+            name = "menuItemId", example = "1"
+    )
     private Long menuItemId;
+    @Schema(
+            name = "quantity", example = "2"
+    )
     private Integer quantity;
-//    @ManyToOne
-//    @JoinColumn(name = "order_id")
-//    private Order order;
 
-    public MenuItemQuantity() {
+    public MenuItemQuantityDTO() {
     }
-
-    public MenuItemQuantity(Long id, Long menuItemId, Integer quantity) {
+    public MenuItemQuantityDTO(Long id, Long menuItemId, Integer quantity) {
         this.id = id;
         this.menuItemId = menuItemId;
         this.quantity = quantity;
     }
-
-    public MenuItemQuantity(Long menuItemId, Integer quantity) {
+    public MenuItemQuantityDTO(Long menuItemId, Integer quantity) {
     }
 
     public Long getId() {
@@ -44,4 +42,5 @@ public class MenuItemQuantity extends BaseEntity {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
 }

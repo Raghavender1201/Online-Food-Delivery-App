@@ -4,5 +4,9 @@ CREATE TABLE IF NOT EXISTS orders (
     restaurant_id BIGINT NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
     status VARCHAR(50) NOT NULL,
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `created_at` date NOT NULL,
+      `created_by` varchar(20) NOT NULL,
+      `updated_at` date DEFAULT NULL,
+      `updated_by` varchar(20) DEFAULT NULL
 );
