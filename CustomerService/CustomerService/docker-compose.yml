@@ -1,0 +1,38 @@
+services:
+  customer:
+    image: "raghavenderg/customer:v1"
+    container_name: "customer-ms"
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 700MB
+    networks:
+      - online-food-order-app-network
+  restaurant:
+    image: "raghavenderg/restauantservice:v1"
+    container_name: "restaurant-ms"
+    ports:
+      - "8081:8081"
+    deploy:
+      resources:
+        limits:
+          memory: 700MB
+    networks:
+      - online-food-order-app-network
+  order:
+    image: "raghavenderg/order:v1"
+    container_name: "order-ms"
+    ports:
+      - "8082:8082"
+    deploy:
+      resources:
+        limits:
+          memory: 700MB
+    networks:
+      - online-food-order-app-network
+
+networks:
+  online-food-order-app-network:
+    driver: bridge
