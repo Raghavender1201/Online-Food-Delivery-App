@@ -1,5 +1,6 @@
 package com.microservices.controller;
 
+import com.microservices.dto.ContactInfoDetails;
 import com.microservices.dto.OrderDTO;
 import com.microservices.service.IOrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,6 +9,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +25,15 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     private IOrderService orderService;
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private ContactInfoDetails contactInfoDetails;
 
     public OrderController(IOrderService orderService) {
         this.orderService = orderService;
@@ -153,6 +166,21 @@ public class OrderController {
     public ResponseEntity<Iterable<OrderDTO>> getOrdersByStatus(@PathVariable String status) {
         Iterable<OrderDTO> orders = orderService.getOrdersByStatus(status);
         return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/version")
+    public String getVersion() {
+        return "Build version is: " +buildVersion;
+    }
+
+    @GetMapping("/java-version")
+    public String javaVersion() {
+        return environment.getProperty("JAVA_HOME");
+    }
+
+    @GetMapping("/contact-details")
+    public ContactInfoDetails contactDetails() {
+        return contactInfoDetails;
     }
 
 }

@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      onProfile: prod
+
+
+build:
+  version: 1.2
+customer:
+  message: "Welcome to Online Food Ordering System"
+  contactdetails:
+    name: raghuprod
+    mobilenumber: 1111111111
+    email: raghupatelprod@gmail.com

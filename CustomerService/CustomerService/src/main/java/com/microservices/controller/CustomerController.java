@@ -1,5 +1,6 @@
 package com.microservices.controller;
 
+import com.microservices.dto.ContactInfoDetails;
 import com.microservices.dto.CustomerDTO;
 import com.microservices.service.ICustomerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,6 +9,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +27,15 @@ import java.util.List;
 public class CustomerController {
 
     private ICustomerService customerService;
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private ContactInfoDetails contactInfoDetails;
 
     public CustomerController(ICustomerService customerService) {
         this.customerService = customerService;
@@ -105,4 +118,18 @@ public class CustomerController {
         return ResponseEntity.ok(updatedCustomer);
     }
 
+    @GetMapping("/version")
+    public String getVersion() {
+        return "Build version is: " +buildVersion;
+    }
+
+    @GetMapping("/java-version")
+    public String javaVersion() {
+        return environment.getProperty("JAVA_HOME");
+    }
+
+    @GetMapping("/contact-details")
+    public ContactInfoDetails contactDetails() {
+        return contactInfoDetails;
+    }
 }

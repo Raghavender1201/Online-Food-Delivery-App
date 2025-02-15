@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      onProfile: qa
+
+build:
+  version: 1.1
+customer:
+  message: "Welcome to Online Food Ordering System"
+  contactdetails:
+    name: raghuqa
+    mobilenumber: 2222222222
+    email: raghupatelqa@gmail.com
