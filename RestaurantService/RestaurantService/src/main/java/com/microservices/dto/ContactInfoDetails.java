@@ -6,5 +6,23 @@ import java.util.Map;
 
 
 @ConfigurationProperties(prefix = "customer")
-public record ContactInfoDetails(String message, Map<String, String> contactDetails) {
+public class ContactInfoDetails {
+    private String message;
+    private Map<String, String> contactDetails;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Map<String, String> getContactDetails() {
+        return contactDetails;
+    }
+
+    public void setContactDetails(Map<String, String> contactDetails) {
+        this.contactDetails = contactDetails;
+    }
 }

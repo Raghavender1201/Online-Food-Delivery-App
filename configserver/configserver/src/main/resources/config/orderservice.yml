@@ -1,0 +1,11 @@
+build:
+  version: 1.0
+customer:
+  message: "Welcome to Online Food Ordering System"
+  contactdetails:
+    name: raghu
+    mobilenumber: 1234567890
+    email: raghupatelorder@gmail.com
+
+
+

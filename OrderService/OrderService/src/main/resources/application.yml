@@ -2,7 +2,7 @@ server:
   port: 8082
 spring:
   application:
-    name: OrderService
+    name: orderservice
   datasource:
     driverClassName: org.h2.Driver
     url: jdbc:h2:mem:testdb
@@ -17,14 +17,19 @@ spring:
       ddl-auto: create
   profiles:
     active: qa
-build:
-  version: 1.0
-customer:
-  message: "Welcome to Online Food Ordering System"
-  contactdetails:
-    name: raghu
-    mobilenumber: 1234567890
-    email: raghupatel@gmail.com
+  config:
+    import: optional:configserver:http://localhost:8071/
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 

@@ -1,0 +1,29 @@
+server:
+  port: 8071
+spring:
+  application:
+    name: configserver
+  profiles:
+    active: git #native
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Raghavender1201/Online-Food-Order-Config
+          timeout: 5
+          clone-on-start: true
+          force-pull: true
+          default-label: main
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+        #native:
+          #search-locations: classpath:/config
+          #search-locations: file:///C://Users//RAGHU PATEL//Documents//config
+encrypt:
+  key: "9E5A8F1C35C37DDE59AEC7BF4E773"
+
+
