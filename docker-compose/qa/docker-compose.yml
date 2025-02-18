@@ -1,0 +1,80 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+  configserver:
+    image: "raghavenderg/configserver:v3"
+    container_name: "configserver-ms"
+    ports:
+      - "8071:8071"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
+  customer:
+    image: "raghavenderg/customerservice:v3"
+    container_name: "customer-ms"
+    ports:
+      - "8080:8080"
+    depends_on:
+      configserver:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: customerservice
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+  restaurant:
+    image: "raghavenderg/restaurantservice:v3"
+    container_name: "restaurant-ms"
+    ports:
+      - "8081:8081"
+    depends_on:
+      configserver:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: restaurantservice
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+  order:
+    image: "raghavenderg/orderservice:v3"
+    container_name: "order-ms"
+    ports:
+      - "8082:8082"
+    depends_on:
+      configserver:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: orderservice
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+networks:
+  online-food-order-app-network:
+    driver: bridge
