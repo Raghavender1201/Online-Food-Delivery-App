@@ -8,6 +8,9 @@ spring:
   cloud:
     config:
       server:
+        #native:
+        #search-locations: classpath:/config
+        #search-locations: file:///C://Users//RAGHU PATEL//Documents//config
         git:
           uri: https://github.com/Raghavender1201/Online-Food-Order-Config
           timeout: 5
@@ -20,10 +23,22 @@ spring:
     port: 5672
     username: guest
     password: guest
-        #native:
-          #search-locations: classpath:/config
-          #search-locations: file:///C://Users//RAGHU PATEL//Documents//config
 encrypt:
   key: "9E5A8F1C35C37DDE59AEC7BF4E773"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
 
 

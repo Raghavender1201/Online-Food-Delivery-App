@@ -101,7 +101,7 @@
 				<version>3.3.2</version>
 				<configuration>
 					<to>
-						<image>raghavenderg/orderservice:v2</image>
+						<image>raghavenderg/orderservice:v3</image>
 					</to>
 				</configuration>
 			</plugin>

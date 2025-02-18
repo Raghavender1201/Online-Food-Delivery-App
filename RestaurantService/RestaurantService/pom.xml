@@ -103,7 +103,7 @@
 				<version>3.3.2</version>
 				<configuration>
 					<to>
-						<image>raghavenderg/restaurantservice:v2</image>
+						<image>raghavenderg/restaurantservice:v3</image>
 					</to>
 				</configuration>
 			</plugin>
