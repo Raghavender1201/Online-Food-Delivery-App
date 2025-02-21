@@ -18,11 +18,6 @@ spring:
           force-pull: true
           default-label: main
 
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
 encrypt:
   key: "9E5A8F1C35C37DDE59AEC7BF4E773"
 management:

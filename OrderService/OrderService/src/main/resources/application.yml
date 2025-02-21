@@ -19,17 +19,32 @@ spring:
     active: qa
   config:
     import: optional:configserver:http://localhost:8071/
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/
 
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+info:
+  app:
+    name: orderservice
+    description: Online Food Delivery Order Application
+    version: 1.0
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+  endpoint:
+    shutdown:
+      #access: unrestricted
+      enabled: true
+  info:
+    env:
+      enabled: true
 
 

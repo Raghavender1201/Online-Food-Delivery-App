@@ -128,4 +128,13 @@ public class RestaurantService implements IRestaurantService {
         }
         return menuItems;
     }
+
+    @Override
+    public List<RestaurantDTO> getAllRestaurantsById(List<Long> ids) {
+        List<Restaurant> restaurants = restaurantRepository.findAllById(ids);
+        if (!restaurants.isEmpty()) {
+            return restaurants.stream().map(RestaurantMapper::mapToRestaurantDTO).collect(Collectors.toList());
+        }
+        return List.of();
+    }
 }

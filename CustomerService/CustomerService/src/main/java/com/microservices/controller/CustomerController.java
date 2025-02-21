@@ -2,6 +2,7 @@ package com.microservices.controller;
 
 import com.microservices.dto.ContactInfoDetails;
 import com.microservices.dto.CustomerDTO;
+import com.microservices.dto.CustomerDashboardDTO;
 import com.microservices.service.ICustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -118,6 +119,12 @@ public class CustomerController {
         return ResponseEntity.ok(updatedCustomer);
     }
 
+    @GetMapping("/customer-dashboard/{id}")
+    public ResponseEntity<CustomerDashboardDTO> getCustomerDashboard(@PathVariable long id) {
+        CustomerDashboardDTO customer = customerService.getCustomerDashboard(id);
+        return ResponseEntity.ok(customer);
+    }
+
     @GetMapping("/version")
     public String getVersion() {
         return "Build version is: " +buildVersion;
@@ -132,4 +139,6 @@ public class CustomerController {
     public ContactInfoDetails contactDetails() {
         return contactInfoDetails;
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.microservices.service;
 
 import com.microservices.dto.CustomerDTO;
+import com.microservices.dto.CustomerDashboardDTO;
 
 import java.util.List;
 
@@ -15,5 +16,7 @@ public interface ICustomerService {
     void deleteCustomer(int id);
 
     List<CustomerDTO> getAllCustomers();
+
+    CustomerDashboardDTO getCustomerDashboard(long id);
 
 }

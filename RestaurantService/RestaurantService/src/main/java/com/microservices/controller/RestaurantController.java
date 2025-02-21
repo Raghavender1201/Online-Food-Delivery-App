@@ -190,6 +190,14 @@ public class RestaurantController {
         return ResponseEntity.status(HttpStatus.OK).body("Menu item deleted successfully");
     }
 
+
+    @PostMapping("/allRestaurants")
+    public ResponseEntity<List<RestaurantDTO>> getAllRestaurantId(@RequestBody List<Long> ids) {
+        List<RestaurantDTO> restaurants = restaurantService.getAllRestaurantsById(ids);
+        return ResponseEntity.status(HttpStatus.OK).body(restaurants);
+    }
+
+
     @GetMapping("/version")
     public String getVersion() {
         return "Build version is: " +buildVersion;
@@ -204,4 +212,5 @@ public class RestaurantController {
     public ContactInfoDetails contactDetails() {
         return contactInfoDetails;
     }
+
 }

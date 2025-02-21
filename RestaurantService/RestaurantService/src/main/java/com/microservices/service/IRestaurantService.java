@@ -25,4 +25,6 @@ public interface IRestaurantService {
 
     List<MenuItemDTO> getAllMenuItems(Long restaurantId);
 
+    List<RestaurantDTO> getAllRestaurantsById(List<Long> ids);
+
 }

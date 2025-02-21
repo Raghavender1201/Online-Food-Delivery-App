@@ -1,9 +1,11 @@
 package com.microservices.service.impl;
 
-import com.microservices.dto.CustomerDTO;
+import com.microservices.dto.*;
 import com.microservices.entity.Customer;
 import com.microservices.exceptions.CustomerAlreadyExistException;
 import com.microservices.exceptions.CustomerNotFoundException;
+import com.microservices.feignclient.OrderFeignClient;
+import com.microservices.feignclient.RestaurantFeignClient;
 import com.microservices.mapper.CustomerMapper;
 import com.microservices.repository.CustomerRepository;
 import com.microservices.service.ICustomerService;
@@ -11,14 +13,23 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class CustomerService implements ICustomerService {
 
     private CustomerRepository customerRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    private RestaurantFeignClient restaurantFeignClient;
+
+    private OrderFeignClient orderFeignClient;
+
+    public CustomerService(CustomerRepository customerRepository, RestaurantFeignClient restaurantFeignClient, OrderFeignClient orderFeignClient) {
         this.customerRepository = customerRepository;
+        this.restaurantFeignClient = restaurantFeignClient;
+        this.orderFeignClient = orderFeignClient;
     }
 
     @Override
@@ -66,5 +77,36 @@ public class CustomerService implements ICustomerService {
     @Override
     public List<CustomerDTO> getAllCustomers() {
         return customerRepository.findAll().stream().map(CustomerMapper::mapToCustomerDTO).toList();
+    }
+
+    @Override
+    public CustomerDashboardDTO getCustomerDashboard(long id) {
+        Customer customer = customerRepository.findById((int) id).orElseThrow(() ->
+                new CustomerNotFoundException("Customer not found with id " + id));
+        if (customer != null) {
+            Iterable<OrderDTO> iterableOrders = orderFeignClient.getOrdersByCustomerId(id).getBody();
+            List<OrderDTO> orders = StreamSupport.stream(iterableOrders.spliterator(), false)
+                    .collect(Collectors.toList());
+
+            List<Long> restaurantIds = orders.stream()
+                    .map(OrderDTO::getRestaurantId)
+                    .distinct()
+                    .collect(Collectors.toList());
+            List<RestaurantDTO> restaurants = restaurantFeignClient.getAllRestaurantId(restaurantIds).getBody();
+            Map<Long, RestaurantDTO> restaurantMap = restaurants.stream()
+                    .collect(Collectors.toMap(RestaurantDTO::getId, r -> r));
+
+            List<OrdersWithRestaurantDTO> orderWithRestaurantList = orders.stream()
+                    .map(order -> new OrdersWithRestaurantDTO(order, restaurantMap.get(order.getRestaurantId())))
+                    .collect(Collectors.toList());
+            CustomerDashboardDTO dashboard = new CustomerDashboardDTO();
+            dashboard.setId(customer.getId());
+            dashboard.setName(customer.getName());
+            dashboard.setEmail(customer.getEmail());
+            dashboard.setAddress(customer.getAddress());
+            dashboard.setOrders(orderWithRestaurantList);
+            return dashboard;
+        }
+        return null;
     }
 }
