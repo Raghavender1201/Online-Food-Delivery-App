@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.info.License;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.client.RestTemplate;
@@ -36,6 +37,7 @@ import org.springframework.web.client.RestTemplate;
 				url = "https://spring.io/blog/2015/07/14/microservices-with-spring"
 		)
 )
+@EnableFeignClients
 public class OrderServiceApplication {
 
 	public static void main(String[] args) {

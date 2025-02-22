@@ -1,12 +1,15 @@
 package com.microservices.service.impl;
 
+import com.microservices.dto.MenuItemDTO;
 import com.microservices.dto.MenuItemQuantityDTO;
 import com.microservices.dto.OrderDTO;
+import com.microservices.dto.RestaurantDTO;
 import com.microservices.entity.MenuItemQuantity;
 import com.microservices.entity.Order;
 import com.microservices.exception.MenuItemNotFoundException;
 import com.microservices.exception.OrderNotFoundException;
 import com.microservices.exception.RestaurantNotFoundException;
+import com.microservices.feignclient.RestaurantFeignClient;
 import com.microservices.mapper.OrderMapper;
 import com.microservices.pojo.MenuItem;
 import com.microservices.pojo.Restaurant;
@@ -26,16 +29,17 @@ import java.util.stream.Collectors;
 public class OrderService implements IOrderService {
 
     private OrderRepository orderRepository;
-    private RestTemplate restTemplate;
-    public OrderService(OrderRepository orderRepository, RestTemplate restTemplate) {
+    private RestaurantFeignClient restaurantFeignClient;
+    public OrderService(OrderRepository orderRepository, RestaurantFeignClient restaurantFeignClient) {
         this.orderRepository = orderRepository;
-        this.restTemplate = restTemplate;
+        this.restaurantFeignClient = restaurantFeignClient;
     }
 
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
         Double totalAmount = 0.0;
-        Restaurant restaurant = restTemplate.getForObject("http://localhost:8081/restaurants/" + orderDTO.getRestaurantId(), Restaurant.class);
+        //Restaurant restaurant = restTemplate.getForObject("http://localhost:8081/restaurants/" + orderDTO.getRestaurantId(), Restaurant.class);
+        RestaurantDTO restaurant = restaurantFeignClient.getRestaurantById(orderDTO.getRestaurantId()).getBody();
 
         if (restaurant == null) {
             throw new RestaurantNotFoundException("Restaurant not found with ID: " + orderDTO.getRestaurantId());
@@ -45,7 +49,7 @@ public class OrderService implements IOrderService {
         for (MenuItemQuantityDTO item : orderDTO.getMenuItemQuantityDTO()) {
             Long menuItemId = item.getMenuItemId();
             Integer quantity = item.getQuantity();
-            MenuItem menuItem = restaurant.getMenuItems().stream()
+            MenuItemDTO menuItem = restaurant.getMenuItems().stream()
                     .filter(m -> m.getId().equals(menuItemId))
                     .findFirst()
                     .orElseThrow(() -> new MenuItemNotFoundException("Menu item not found with ID: " + menuItemId));
