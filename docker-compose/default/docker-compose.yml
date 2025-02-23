@@ -1,6 +1,6 @@
 services:
   configserver:
-    image: "raghavenderg/configserver:v5"
+    image: "raghavenderg/configserver:v6"
     container_name: "configserver-ms"
     ports:
       - "8071:8071"
@@ -14,7 +14,7 @@ services:
       file: common-config.yml
       service: microservice-base-config
   eurekaserver:
-    image: "raghavenderg/eurekaserver:v5"
+    image: "raghavenderg/eurekaserver:v6"
     container_name: "eurekaserver-ms"
     ports:
       - "8070:8070"
@@ -34,10 +34,16 @@ services:
       SPRING_APPLICATION_NAME: "eurekaserver"
 
   customer:
-    image: "raghavenderg/customerservice:v5"
+    image: "raghavenderg/customerservice:v6"
     container_name: "customer-ms"
     ports:
       - "8080:8080"
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     depends_on:
       configserver:
         condition: service_healthy
@@ -50,10 +56,16 @@ services:
       service: microservice-eureka-config
 
   restaurant:
-    image: "raghavenderg/restaurantservice:v5"
+    image: "raghavenderg/restaurantservice:v6"
     container_name: "restaurant-ms"
     ports:
       - "8081:8081"
+    healthcheck:
+      test: "curl --fail --silent localhost:8081/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     depends_on:
       configserver:
         condition: service_healthy
@@ -66,10 +78,16 @@ services:
       service: microservice-eureka-config
 
   order:
-    image: "raghavenderg/orderservice:v5"
+    image: "raghavenderg/orderservice:v6"
     container_name: "order-ms"
     ports:
       - "8082:8082"
+    healthcheck:
+      test: "curl --fail --silent localhost:8082/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     depends_on:
       configserver:
         condition: service_healthy
@@ -80,6 +98,29 @@ services:
     extends:
       file: common-config.yml
       service: microservice-eureka-config
+
+  gatewayserver:
+    image: "raghavenderg/gatewayserver:v6"
+    container_name: "gatewayserver-ms"
+    ports:
+      - "8072:8072"
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+      customer:
+        condition: service_healthy
+      restaurant:
+        condition: service_healthy
+      order:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: gatewayserver
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
 
 networks:
   online-food-order-app-network:

@@ -74,7 +74,7 @@
 				<version>3.3.2</version>
 				<configuration>
 					<to>
-						<image>raghavenderg/eurekaserver:v5</image>
+						<image>raghavenderg/eurekaserver:v6</image>
 					</to>
 				</configuration>
 			</plugin>

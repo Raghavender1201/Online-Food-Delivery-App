@@ -17,6 +17,6 @@ public interface ICustomerService {
 
     List<CustomerDTO> getAllCustomers();
 
-    CustomerDashboardDTO getCustomerDashboard(long id);
+    CustomerDashboardDTO getCustomerDashboard(String correlationId, long id);
 
 }

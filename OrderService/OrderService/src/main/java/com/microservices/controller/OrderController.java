@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Order Service to order food, get order details and to update order status",
         description = "Order Service to Create, Update, Delete and Get Order Details")
 public class OrderController {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     private IOrderService orderService;
 
@@ -129,7 +133,9 @@ public class OrderController {
             )
     )
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<Iterable<OrderDTO>> getOrdersByCustomerId(@PathVariable Long customerId) {
+    public ResponseEntity<Iterable<OrderDTO>> getOrdersByCustomerId(@RequestHeader("CorrelationId") String correlationId,
+                                                                    @PathVariable Long customerId) {
+        logger.debug("CorrelationId in Order Service: {}", correlationId);
         Iterable<OrderDTO> orders = orderService.getOrdersByCustomerId(customerId);
         return ResponseEntity.ok(orders);
     }

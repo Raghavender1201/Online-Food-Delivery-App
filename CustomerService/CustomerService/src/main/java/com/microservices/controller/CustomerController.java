@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -26,6 +28,8 @@ import java.util.List;
 @Tag(name = "Customer Service",
         description = "Customer Service to Register, Update, Delete and Get Customer Details")
 public class CustomerController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     private ICustomerService customerService;
 
@@ -120,8 +124,10 @@ public class CustomerController {
     }
 
     @GetMapping("/customer-dashboard/{id}")
-    public ResponseEntity<CustomerDashboardDTO> getCustomerDashboard(@PathVariable long id) {
-        CustomerDashboardDTO customer = customerService.getCustomerDashboard(id);
+    public ResponseEntity<CustomerDashboardDTO> getCustomerDashboard(@RequestHeader("CorrelationId") String correlationId,
+                                                                     @PathVariable long id) {
+        logger.debug("CorrelationId in Customer Service: {}", correlationId);
+        CustomerDashboardDTO customer = customerService.getCustomerDashboard(correlationId, id);
         return ResponseEntity.ok(customer);
     }
 

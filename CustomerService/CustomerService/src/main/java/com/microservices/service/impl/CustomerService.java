@@ -80,11 +80,11 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public CustomerDashboardDTO getCustomerDashboard(long id) {
+    public CustomerDashboardDTO getCustomerDashboard(String correlationId, long id) {
         Customer customer = customerRepository.findById((int) id).orElseThrow(() ->
                 new CustomerNotFoundException("Customer not found with id " + id));
         if (customer != null) {
-            Iterable<OrderDTO> iterableOrders = orderFeignClient.getOrdersByCustomerId(id).getBody();
+            Iterable<OrderDTO> iterableOrders = orderFeignClient.getOrdersByCustomerId(correlationId, id).getBody();
             List<OrderDTO> orders = StreamSupport.stream(iterableOrders.spliterator(), false)
                     .collect(Collectors.toList());
 
@@ -92,7 +92,7 @@ public class CustomerService implements ICustomerService {
                     .map(OrderDTO::getRestaurantId)
                     .distinct()
                     .collect(Collectors.toList());
-            List<RestaurantDTO> restaurants = restaurantFeignClient.getAllRestaurantId(restaurantIds).getBody();
+            List<RestaurantDTO> restaurants = restaurantFeignClient.getAllRestaurantId(correlationId, restaurantIds).getBody();
             Map<Long, RestaurantDTO> restaurantMap = restaurants.stream()
                     .collect(Collectors.toMap(RestaurantDTO::getId, r -> r));
 

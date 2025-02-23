@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -26,6 +28,8 @@ import java.util.List;
 @Tag(name = "Restaurant Service to create, update, delete, get Restaurant Details and to add menu items",
     description = "Restaurant Service to Create, Update, Delete and Get Restaurant and Menu Item Details")
 public class RestaurantController {
+
+    private static final Logger logger = LoggerFactory.getLogger(RestaurantController.class);
 
     private IRestaurantService restaurantService;
 
@@ -192,7 +196,9 @@ public class RestaurantController {
 
 
     @PostMapping("/allRestaurants")
-    public ResponseEntity<List<RestaurantDTO>> getAllRestaurantId(@RequestBody List<Long> ids) {
+    public ResponseEntity<List<RestaurantDTO>> getAllRestaurantId(@RequestHeader("CorrelationId") String correlationId,
+                                                                  @RequestBody List<Long> ids) {
+        logger.debug("CorrelationId in Order Service: {}", correlationId);
         List<RestaurantDTO> restaurants = restaurantService.getAllRestaurantsById(ids);
         return ResponseEntity.status(HttpStatus.OK).body(restaurants);
     }

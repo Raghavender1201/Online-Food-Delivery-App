@@ -77,7 +77,7 @@
 				<version>3.3.2</version>
 				<configuration>
 					<to>
-						<image>raghavenderg/configserver:v5</image>
+						<image>raghavenderg/configserver:v6</image>
 					</to>
 				</configuration>
 			</plugin>

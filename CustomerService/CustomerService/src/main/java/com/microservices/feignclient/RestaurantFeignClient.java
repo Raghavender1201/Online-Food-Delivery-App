@@ -3,10 +3,7 @@ package com.microservices.feignclient;
 import com.microservices.dto.RestaurantDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,5 +11,6 @@ import java.util.List;
 public interface RestaurantFeignClient {
 
     @PostMapping("/restaurants/allRestaurants")
-    public ResponseEntity<List<RestaurantDTO>> getAllRestaurantId(@RequestBody List<Long> ids);
+    public ResponseEntity<List<RestaurantDTO>> getAllRestaurantId(@RequestHeader("CorrelationId") String correlationId,
+                                                                  @RequestBody List<Long> ids);
 }
